@@ -4,14 +4,31 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from cloudinary.models import CloudinaryField
 
 # Create your models here.
+class Category(models.Model):
+    event_category = models.CharField(max_length = 60, default = 'category')
+
+    def __str__(self):
+        return self.event_category
+
+    @classmethod
+    def search_category(cls,search_term):
+        category = cls.objects.get(event_category__icontains=search_term)
+        return category
+
+    @classmethod
+    def del_category(cls, id):
+        cls.objects.filter(id = id).delete()
+    
 
 class Profile(models.Model):
     name = models.CharField(max_length=60)
     bio = models.CharField(max_length=300)
     user = models.OneToOneField(User,on_delete=models.CASCADE)
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    image = CloudinaryField('image')
+    event_category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.user.username} Profile'
@@ -34,13 +51,13 @@ class Profile(models.Model):
 
 
 class Event(models.Model):
+    
     title = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     postDate = models.DateTimeField(auto_now_add=True)
     completeDate = models.DateField(null=True)
     time = models.TimeField()
     end_time = models.TimeField(null=True)
-    color = models.CharField(max_length=10)
     user=models.ForeignKey(Profile,on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
@@ -54,21 +71,3 @@ class Event(models.Model):
     def update_event(self):
         self.update()
 
-class Category(models.Model):
-    event_category = models.CharField(max_length = 100)
-
-    class Meta:
-        ordering =[event_category]
-
-    def __str__(self):
-        return self.event_category
-
-    @classmethod
-    def search_category(cls,search_term):
-        category = cls.objects.get(image_category__icontains=search_term)
-        return category
-
-    @classmethod
-    def del_category(cls, id):
-        cls.objects.filter(id = id).delete()
-    
