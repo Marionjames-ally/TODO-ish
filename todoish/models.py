@@ -42,6 +42,8 @@ class Event(models.Model):
     end_time = models.TimeField(null=True)
     color = models.CharField(max_length=10)
     user=models.ForeignKey(Profile,on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
 
     def create_event(self):
         self.save()
@@ -51,3 +53,22 @@ class Event(models.Model):
 
     def update_event(self):
         self.update()
+
+class Category(models.Model):
+    event_category = models.CharField(max_length = 100)
+
+    class Meta:
+        ordering =[event_category]
+
+    def __str__(self):
+        return self.event_category
+
+    @classmethod
+    def search_category(cls,search_term):
+        category = cls.objects.get(image_category__icontains=search_term)
+        return category
+
+    @classmethod
+    def del_category(cls, id):
+        cls.objects.filter(id = id).delete()
+    
