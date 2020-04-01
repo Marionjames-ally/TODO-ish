@@ -49,9 +49,7 @@ class Profile(models.Model):
     def delete_profile(self):
         self.delete()
 
-
 class Event(models.Model):
-    
     title = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     postDate = models.DateTimeField(auto_now_add=True)
@@ -71,3 +69,10 @@ class Event(models.Model):
     def update_event(self):
         self.update()
 
+class Post(models.Model):
+    post = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post_created = models.DateTimeField(auto_now_add=True)
+    
+    def save_post(self):
+        self.save()

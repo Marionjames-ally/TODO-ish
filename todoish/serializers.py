@@ -27,3 +27,14 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('event_id', 'event_category')
+
+class PostSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), # Or User.objects.filter(active=True)
+        required=False, 
+        allow_null=True, 
+        default=None
+    )
+    class Meta:
+        model = Post
+        fields = ('id','post','user','post_created')
